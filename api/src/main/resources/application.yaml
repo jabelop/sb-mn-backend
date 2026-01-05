@@ -1,0 +1,60 @@
+ktor:
+    application:
+        modules:
+            - com.jatec.ApplicationKt.module
+    deployment:
+        port: 8080
+    rabbitmq:
+        uri: "amqp://user:password@rabbitmq-b:5672"
+        sb-exchange: "sb-exchange"
+        properties:
+            correlation-id: "jetbrains"
+            type: "plugin"
+            headers-key: "ktor"
+            headers-value: "rabbitmq"
+        queues:
+            players-response-all: "players_response_all_queue"
+            players-request-all: "players_request_all_queue"
+            players-request-create-one: "players_request_create_one_queue"
+            players-response-create-one: "players_response_create_one_queue"
+            creatures-response-all: "creatures_response_all_queue"
+            creatures-request-all: "creatures_request_all_queue"
+            creatures-request-create-one: "creatures_request_create_one_queue"
+            creatures-response-create-one: "creatures_response_create_one_queue"
+            player-creatures-request-all: "player_creatures_request_all_queue"
+            player-creatures-response-all: "player_creatures_response_all_queue"
+            player-creatures-request-update-one: "player_creatures_request_update_one_queue"
+            player-creatures-response-update-one: "player_creatures_response_update_one_queue"
+            combats-request-all: "combats_request_all_queue"
+            combats-response-all: "combats_response_all_queue"
+            combats-request-create-one: "combats_request_create_one_queue"
+            combats-response-create-one: "combats_response_create_one_queue"
+            player-combats-request-all: "player_combats_request_all_queue"
+            player-combats-response-all: "player_combats_response_all_queue"
+            player-combats-request-update-one: "player_combats_request_update_one_queue"
+            player-combats-response-update-one: "player_combats_response_update_one_queue"
+            player-creatures-combat-response-all: "player_creatures_combat_response_all_queue"
+        routing-keys:
+            players-response-all: "players-response-all-key"
+            players-request-all: "players-request-all-key"
+            players-request-create-one: "players-request-create-one-key"
+            players-response-create-one: "players-response-create-one-key"
+            creatures-response-all: "creatures-response-all-key"
+            creatures-request-all: "creatures-request-all-key"
+            creatures-request-create-one: "creatures-request-create-one-key"
+            creatures-response-create-one: "creatures-response-create-one-key"
+            player-creatures-response-all: "player-creatures-response-all-key"
+            player-creatures-request-all: "player-creatures-request-all-key"
+            player-creatures-request-update-one: "player-creatures-request-update-one-key"
+            player-creatures-response-update-one: "player-creatures-response-update-one-key"
+            combats-request-all: "combats-request-all-key"
+            combats-response-all: "combats-response-all-key"
+            combats-request-create-one: "combats-request-create-one-key"
+            combats-response-create-one: "combats-response-create-one-key"
+            player-combats-request-all: "player-combats-request-all-key"
+            player-combats-response-all: "player-combats-response-all-key"
+            player-combats-request-update-one: "player-combats-request-update-one-key"
+            player-combats-response-update-one: "player-combats-response-update-one-key"
+            player-creatures-combat-response-all: "player-creatures-combat-response-all-key"
+
+

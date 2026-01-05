@@ -1,0 +1,61 @@
+<html>
+<head>
+    <title>Using Ktor WebSockets</title>
+    <script type="text/javascript" src="./static/app.js">
+    </script>
+</head>
+<body>
+<h1>Combat simulation</h1>
+<form action="javascript:createCombat()">
+    <label for="idPlayer1">Player1</label>
+    <input id="idPlayer1" type="text">
+    <label for="idPlayer2">Player2</label>
+    <input id="idPlayer2" type="text" >
+    <input type="submit" value="Create Combat">
+</form>
+
+<div>
+    <button id="start-combat">Run combat</button>
+</div>
+<br>
+Combat created
+<br>
+<table rules="all">
+    <thead>
+    <tr>
+        <th>combat</th><th>player 1</th><th>player 2</th>
+    </tr>
+    </thead>
+    <tbody id="combat">
+    </tbody>
+</table>
+
+Combat data
+<br>
+Action
+<p id="action"></p>
+<br>
+<table rules="all">
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>id player</th>
+        <th>name</th>
+        <th>creature class</th>
+        <th>level</th>
+        <th>xp</th>
+        <th>hp</th>
+        <th>speed</th>
+        <th>attack</th>
+        <th>defense</th>
+        <th>time to attack</th>
+        <th>action</th>
+        <th>target</th>
+        <th>Play?</th>
+    </tr>
+    </thead>
+    <tbody id="combatData">
+    </tbody>
+</table>
+</body>
+</html>

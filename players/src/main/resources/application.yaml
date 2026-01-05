@@ -1,0 +1,33 @@
+ktor:
+    application:
+        modules:
+            - com.jatec.ApplicationKt.module
+    deployment:
+        port: 8082
+    database:
+        url: "jdbc:postgresql://database:5432/psql_db"
+        user: "psql_user"
+        password: "psql_password"
+    rabbitmq:
+        uri: "amqp://user:password@rabbitmq-b:5672"
+        sb-exchange: "sb-exchange"
+        properties:
+            correlation-id: "jetbrains"
+            type: "plugin"
+            headers-key: "ktor"
+            headers-value: "rabbitmq"
+        queues:
+            players-response-all: "players_response_all_queue"
+            players-request-all: "players_request_all_queue"
+            players-request-create-one: "players_request_create_one_queue"
+            players-response-create-one: "players_response_create_one_queue"
+            player-creatures-request-all: "player_creatures_request_all_queue"
+            player-creatures-response-all: "player_creatures_response_all_queue"
+        routing-keys:
+            players-response-all: "players-response-all-key"
+            players-request-all: "players-request-all-key"
+            players-request-create-one: "players-request-create-one-key"
+            players-response-create-one: "players-response-create-one-key"
+            player-creatures-response-all: "player-creatures-response-all-key"
+            player-creatures-request-all: "player-creatures-request-all-key"
+

@@ -1,0 +1,36 @@
+ktor:
+    application:
+        modules:
+            - com.jatec.ApplicationKt.module
+    deployment:
+        port: 8081
+    database:
+        url: "jdbc:postgresql://database:5432/psql_db"
+        user: "psql_user"
+        password: "psql_password"
+    rabbitmq:
+        uri: "amqp://user:password@rabbitmq-b:5672"
+        sb-exchange: "sb-exchange"
+        properties:
+            correlation-id: "jetbrains"
+            type: "plugin"
+            headers-key: "ktor"
+            headers-value: "rabbitmq"
+        queues:
+            combats-request-all: "combats_request_all_queue"
+            combats-response-all: "combats_response_all_queue"
+            combats-request-create-one: "combats_request_create_one_queue"
+            combats-response-create-one: "combats_response_create_one_queue"
+            player-combats-request-all: "player_combats_request_all_queue"
+            player-combats-response-all: "player_combats_response_all_queue"
+            player-combats-request-update-one: "player_combats_request_update_one_queue"
+            player-combats-response-update-one: "player_combats_response_update_one_queue"
+        routing-keys:
+            combats-request-all: "combats-request-all-key"
+            combats-response-all: "combats-response-all-key"
+            combats-request-create-one: "combats-request-create-one-key"
+            combats-response-create-one: "combats-response-create-one-key"
+            player-combats-request-all: "player-combats-request-all-key"
+            player-combats-response-all: "player-combats-response-all-key"
+            player-combats-request-update-one: "player-combats-request-update-one-key"
+            player-combats-response-update-one: "player-combats-response-update-one-key"

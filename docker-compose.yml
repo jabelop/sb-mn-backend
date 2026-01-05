@@ -1,0 +1,95 @@
+services:
+  database:
+    image: postgres
+    command: postgres -c shared_buffers=256MB -c max_connections=200 -c listen_addresses='*'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=psql_user
+      - POSTGRES_PASSWORD=psql_password
+      - POSTGRES_DB=psql_db
+    volumes:
+      - database-data:/home/jatec/proyectos/kotlin-backend/mn-bcknd/api/persistence/
+    networks:
+      - server-network
+
+  rabbitmq-b:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-b
+    hostname: rabbitmq
+    volumes:
+      - rabbitmq:${PWD}/rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
+    networks:
+      - server-network
+      
+  api:
+    build:
+      context: ./
+      dockerfile: ./api/Dockerfile
+    ports:
+      - '80:8080'
+    depends_on:
+      - rabbitmq-b
+      - players
+    volumes:
+      - api-app:/app # any change to base folder should be reflected
+    #command: npm run start:dev api
+    networks:
+      - server-network      
+      
+  players:
+    build:
+      context: ./
+      dockerfile: ./players/Dockerfile
+    depends_on:
+      - rabbitmq-b
+      - database
+    volumes:
+      - players-app:/app
+    #command: npm run start:dev auth # overrides CMD from dockerfile
+    networks:
+      - server-network
+      
+  creatures:
+    build:
+      context: ./
+      dockerfile: ./creatures/Dockerfile
+    depends_on:
+      - rabbitmq-b
+      - database
+    volumes:
+      - creatures-app:/app
+    #command: npm run start:dev auth # overrides CMD from dockerfile
+    networks:
+      - server-network
+      
+  combats:
+    build:
+      context: ./
+      dockerfile: ./combats/Dockerfile
+    ports:
+      - '8081:8081'
+    depends_on:
+      - rabbitmq-b
+      - database
+    volumes:
+      - combats-app:/app
+    #command: npm run start:dev auth # overrides CMD from dockerfile
+    networks:
+      - server-network
+
+volumes:
+  database-data:
+  rabbitmq:
+  api-app:
+  players-app:
+  creatures-app:
+  combats-app:
+
+networks:
+  server-network:

@@ -1,0 +1,38 @@
+ktor:
+    application:
+        modules:
+            - com.jatec.ApplicationKt.module
+    deployment:
+        port: 8083
+    database:
+        url: "jdbc:postgresql://database:5432/psql_db"
+        user: "psql_user"
+        password: "psql_password"
+    rabbitmq:
+        uri: "amqp://user:password@rabbitmq-b:5672"
+        sb-exchange: "sb-exchange"
+        properties:
+            correlation-id: "jetbrains"
+            type: "plugin"
+            headers-key: "ktor"
+            headers-value: "rabbitmq"
+        queues:
+            creatures-request-all: "creatures_request_all_queue"
+            creatures-response-all: "creatures_response_all_queue"
+            creatures-request-create-one: "creatures_request_create_one_queue"
+            creatures-response-create-one: "creatures_response_create_one_queue"
+            player-creatures-request-all: "player_creatures_request_all_queue"
+            player-creatures-response-all: "player_creatures_response_all_queue"
+            player-creatures-request-update-one: "player_creatures_request_update_one_queue"
+            player-creatures-response-update-one: "player_creatures_response_update_one_queue"
+            player-creatures-combat-response-all: "player_creatures_combat_response_all_queue"
+        routing-keys:
+            creatures-request-all: "creatures-request-all-key"
+            creatures-response-all: "creatures-response-all-key"
+            creatures-request-create-one: "creatures-request-create-one-key"
+            creatures-response-create-one: "creatures-response-create-one-key"
+            player-creatures-request-all: "player-creatures-request-all-key"
+            player-creatures-response-all: "player-creatures-response-all-key"
+            player-creatures-request-update-one: "player-creatures-request-update-one-key"
+            player-creatures-response-update-one: "player-creatures-response-update-one-key"
+            player-creatures-combat-response-all: "player-creatures-combat-response-all-key"

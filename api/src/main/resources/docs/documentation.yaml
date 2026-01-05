@@ -1,0 +1,559 @@
+openapi: 3.0.0
+info:
+  title: api
+  version: 0.0.1
+paths:
+  /players:
+    get:
+      operationId: get_players
+      parameters: []
+#        - in: query
+#          name: MessageQuery
+#          required: true
+#          schema:
+#            $ref: '#/components/schemas/MessageFinder'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageFinder'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponsePlayersGet'
+      tags:
+        - Players
+  /player:
+    post:
+      operationId: Post_player
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagePlayerCreator'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponsePlayersPost'
+      security:
+        - bearer: []
+      tags:
+        - Players
+  /creatures:
+    get:
+      summary: Get endpoint filtering only by id or name, the others can be null
+      operationId: get_creatures
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageFinderCreatures'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponseCreaturesGet'
+      tags:
+        - Creatures
+  /creature:
+    post:
+      operationId: Post_creature
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagePlayerCreatureCreator'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponseCreaturesPost'
+      security:
+        - bearer: []
+      tags:
+        - Creatures
+    put:
+      operationId: Put_creature
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagePlayerCreatureUpdater'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponseCreaturesPut'
+      security:
+        - bearer: []
+      tags:
+        - Creatures
+  /combats:
+    get:
+      operationId: get_combats
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageFinderCombats'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponseCombatsGet'
+      tags:
+        - Combats
+  /player-combats-data:
+    get:
+      operationId: get_playerCombats
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageFinderCombats'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponseCombatsGet'
+      tags:
+        - Combats
+  /combat:
+    post:
+      operationId: Post_combat
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagePlayerCombatCreator'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponseCombatPost'
+      security:
+        - bearer: []
+      tags:
+        - Combats
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    Player:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Creature:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        creatureClass:
+          type: string
+        level:
+          type: integer
+        xp:
+          type: integer
+        hp:
+          type: integer
+        speed:
+          type: integer
+        attack:
+          type: integer
+    MessagePlayersCreatures:
+      type: object
+      properties:
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        creatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Creature'
+    MessagePlayerCreator:
+      type: object
+      properties:
+        name:
+          type: string
+    StandardResponsePlayersGet:
+      type: object
+      properties:
+        error:
+          type: boolean
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayersCreatures'
+      required:
+        - error
+    MessagePlayerCreation:
+      type: object
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
+    StandardResponsePlayersPost:
+      type: object
+      properties:
+        error:
+          type: 'boolean'
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayerCreation'
+      required:
+        - error
+    MessageFinder:
+      type: object
+      properties:
+        where:
+          $ref: '#/components/schemas/WhereOptions'
+      required:
+        - where
+    WhereOptions:
+      type: object
+      properties:
+        playerId:
+          type: string
+        creatureId:
+          type: string
+        name:
+          type: string
+      required:
+    WhereOptionsCreatures:
+      type: object
+      properties:
+        playerId:
+          type: string
+        creatureId:
+          type: string
+        name:
+          type: string
+        enemyId:
+          type: string
+      required:
+    MessageFinderCreatures:
+      type: object
+      properties:
+        where:
+          $ref: '#/components/schemas/WhereOptionsCreatures'
+      required:
+        - where
+    StandardResponseCreaturesGet:
+      type: object
+      properties:
+        error:
+          type: boolean
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayersCreatures'
+      required:
+        - error
+    MessagePlayerCreatureCreator:
+      type: object
+      properties:
+        playerId:
+          type: string
+        creatureId:
+          type: string
+      required:
+        - playerId
+        - creatureId
+    MessagePlayerCreatureCreation:
+      type: object
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
+    StandardResponseCreaturesPost:
+      type: object
+      properties:
+        error:
+          type: 'boolean'
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayerCreatureCreation'
+      required:
+        - error
+    UpdatePlayerCreatureOptions:
+      type: object
+      properties:
+        creatureId:
+          type: string
+        xp:
+          type: integer
+      required:
+        - creatureId
+        - xp
+    MessagePlayerCreatureUpdater:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/UpdatePlayerCreatureOptions'
+    PlayerCreature:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        creatureClass:
+          type: string
+        idPlayer:
+          type: string
+        level:
+          type: integer
+        xp:
+          type: integer
+        hp:
+          type: integer
+        speed:
+          type: integer
+        attack:
+          type: integer
+    MessagePlayerCreatureUpdate:
+      type: object
+      properties:
+        creature:
+          $ref: '#/components/schemas/PlayerCreature'
+    StandardResponseCreaturesPut:
+      type: object
+      properties:
+        error:
+          type: 'boolean'
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayerCreatureUpdate'
+      required:
+        - error
+    WhereOptionsCombats:
+      type: object
+      properties:
+        combatId:
+          type: string
+        playerId:
+          type: string
+    MessageFinderCombats:
+      type: object
+      properties:
+        where:
+          $ref: '#/components/schemas/WhereOptionsCombats'
+    Combat:
+      type: object
+      properties:
+        id:
+          type: string
+        idPlayer1:
+          type: string
+        idPlayer2:
+          type: string
+        winner:
+          type: string
+        ip:
+          type: string
+        port:
+          type: integer
+        startedAt:
+          type: string
+        updatedAt:
+          type: string
+        finishedAt:
+          type: string
+      required:
+        - id
+        - idPlayer1
+        - idPlayer2
+        - winner
+        - ip
+        - port
+        - startedAt
+        - updatedAt
+    MessagePlayersCombats:
+      type: object
+      properties:
+        combats:
+          type: array
+          items:
+            $ref: '#/components/schemas/Combat'
+    StandardResponseCombatsGet:
+      type: object
+      properties:
+        error:
+          type: boolean
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayersCombats'
+      required:
+        - error
+    MessagePlayersCombatData:
+      type: object
+      properties:
+        combatData:
+          type: array
+          items:
+            $ref: '#/components/schemas/combatData'
+    StandardResponsePlayerCombatDataGet:
+      type: object
+      properties:
+        error:
+          type: boolean
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessagePlayersCombatData'
+      required:
+        - error
+    MessagePlayerCombatCreator:
+      type: object
+      properties:
+        player1Id:
+          type: string
+        player2Id:
+          type: string
+        isVsAi:
+          type: boolean
+      required:
+        - player1Id
+        - player2Id
+        - isVsAi
+    CombatData:
+      type: object
+      properties:
+        idCombat:
+          type: string
+        idPlayer:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        creatureClass:
+          type: string
+        level:
+          type: integer
+        xp:
+          type: integer
+        hp:
+          type: integer
+        speed:
+          type: integer
+        attack:
+          type: integer
+        defense:
+          type: integer
+        timeToAttack:
+          type: integer
+      required:
+        - idCombat
+        - idPlayer
+        - id
+        - name
+        - creatureClass
+        - idPlayer
+        - level
+        - xp
+        - hp
+        - speed
+        - attack
+        - defense
+        - timeToAttack
+    CombatCreatedData:
+      type: object
+      properties:
+        combat:
+          $ref: '#/components/schemas/Combat'
+        combatData:
+          type: array
+          items:
+            $ref: '#/components/schemas/CombatData'
+      required:
+        - combat
+        - combatData
+    MessageCombatCreatedData:
+      type: object
+      properties:
+        combatCreatedData:
+          $ref: '#/components/schemas/CombatCreatedData'
+        isVsAi:
+          type: boolean
+        playerId:
+          type: string
+      required:
+        - combatCreatedData
+        - isVsAi
+        - playerId
+    StandardResponseCombatPost:
+      type: object
+      properties:
+        error:
+          type: 'boolean'
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/MessageCombatCreatedData'
+      required:
+        - error
