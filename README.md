@@ -31,6 +31,11 @@ In order to get all the project up you just need to run the `docker compose up` 
 The port 80 should be free to get the api gateway listening for requests, besides the combats service needs to use the port 8081 for the combat simulation app.
 When all the services are up you will have to run the migrations starting always by the players service ones, then the creatures service ones and finally the combats service migrations.
 This is enough to get all the system ready for creating a combat betwen a created player `player one` and the created `ai` player which will perform its own movements.
+A simple HTML/JavaSccript application has been deployed for playing a combat, take a look of the combats service's README for more details.
+
+This is a screenshot of an actual combat played:
+
+![alt text](https://github.com/jabelop/sb-mn-backend/blob/main/combat-simulation.png)
 
 ### API documentation
 The api has all the endpoints documented with swagger. You can access to that documentation on the url: `http://localhost:80/swagger` once the project is up with docker, check the api configuration for getting the port if you get the api up out of the docker compose file.
