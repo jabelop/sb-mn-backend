@@ -9,11 +9,11 @@ object CombatsTable : Table("combats") {
     val id = uuid("id")
     val idPlayer1 = uuid("id_player1")
     val idPlayer2 = uuid("id_player2")
-    val winner = uuid("winner")
+    val winner = uuid("winner").nullable()
     val ip = varchar("ip", IP_LENGTH)
     val port = integer("port")
     val startedAt = varchar("started_at", DATETIME_LENGTH)
     val updatedAt = varchar("updated_at", DATETIME_LENGTH)
-    val finishedAt = varchar("finished_at", DATETIME_LENGTH)
+    val finishedAt = long("finished_at").nullable()
     override val primaryKey = PrimaryKey(id)
 }

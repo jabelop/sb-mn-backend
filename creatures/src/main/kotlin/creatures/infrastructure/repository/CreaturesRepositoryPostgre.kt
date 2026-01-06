@@ -114,7 +114,11 @@ class CreaturesRepositoryPostgre(levelUpManager: LevelUpManager): CreaturesRepos
                 options.xp
             )
 
-            PlayerCreaturesTable.update {
+            println("updating only ${updatedPlayerCreature.id}")
+            PlayerCreaturesTable.update(
+                { PlayerCreaturesTable.id.eq(fromString(updatedPlayerCreature.id)) }
+            )
+            {
                 it[level] = updatedPlayerCreature.level
                 it[xp] = updatedPlayerCreature.xp
                 it[hp] = updatedPlayerCreature.hp

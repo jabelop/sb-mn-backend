@@ -1,5 +1,6 @@
 package com.jatec.combats.application.validators
 
+import com.jatec.combats.application.utils.DateUtils
 import com.jatec.combats.domain.model.Combat
 import com.jatec.combats.domain.value_objects.ValidDateTime
 import com.jatec.combats.domain.value_objects.ValidIp
@@ -24,7 +25,7 @@ class CombatValidatedBuilder {
                 port = ValidPort(combat.port).validatedPort,
                 startedAt = if (combat.startedAt != null) ValidDateTime(combat.startedAt).validatedDateTime else null,
                 updatedAt = if (combat.updatedAt != null) ValidDateTime(combat.updatedAt).validatedDateTime else null,
-                finishedAt = if (combat.finishedAt != null) ValidDateTime(combat.finishedAt).validatedDateTime else null,
+                finishedAt = if (combat.finishedAt != null) DateUtils.timeStringToUnixDate(ValidDateTime(DateUtils.unixTimeToDateString(combat.finishedAt)).validatedDateTime) else null,
             )
         }
     }

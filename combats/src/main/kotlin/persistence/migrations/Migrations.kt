@@ -18,7 +18,7 @@ fun initCombatsTable(database: Database) {
     transaction(database) {
         // combats table definition and initialization
         exec("DROP TABLE IF EXISTS combats")
-        exec("CREATE TABLE IF NOT EXISTS combats (id UUID NOT NULL PRIMARY KEY, id_player1 UUID NOT NULL, id_player2 UUID NOT NULL, winner UUID, ip VARCHAR(15) NOT NULL, port INTEGER NOT NULL, started_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW(), finished_at TIMESTAMP)")
+        exec("CREATE TABLE IF NOT EXISTS combats (id UUID NOT NULL PRIMARY KEY, id_player1 UUID NOT NULL, id_player2 UUID NOT NULL, winner UUID, ip VARCHAR(15) NOT NULL, port INTEGER NOT NULL, started_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW(), finished_at BIGINT)")
         exec("CREATE INDEX Indx_combats_id_player1 ON combats (id_player1)")
         exec("CREATE INDEX Indx_combats_id_player2 ON combats(id_player2)")
 

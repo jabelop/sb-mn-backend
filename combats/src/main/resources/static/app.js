@@ -2,7 +2,6 @@ let socket;
 let combatId = "";
 let targetId = "";
 let action = "";
-let combatData;
 let playing = false
 let combatRunningData;
 let player1 = "";
@@ -16,13 +15,15 @@ function attack() {
 }
 
 function handleCombatMessage() {
-    let combatMessage = JSON.parse(event.data);
+    const combatMessage = JSON.parse(event.data);
     console.log(combatMessage);
     document.getElementById("action").innerHTML = combatMessage.msg || combatMessage.data.action
-    combatData = combatMessage.data.combatData;
+    combatRunningData.combatData = combatMessage.data.combatData;
     clearTable('combatData');
-    addCombatDataToTable(combatMessage.data.combatData, combatMessage.data.next)
-
+    addCombatDataToTable(combatMessage.data.combatData, combatMessage.data.next);
+    combatRunningData.combat = combatMessage.data.combat;
+    clearTable('combat');
+    addCombatToTable(combatMessage.data.combat);
 }
 
 function runCombat(id, idPlayer) {
@@ -68,6 +69,10 @@ function taskCombat(combat) {
         td(combat.id),
         td(combat.idPlayer1),
         td(combat.idPlayer2),
+        td(combat.winner),
+        td(combat.startedAt),
+        td(combat.updatedAt),
+        td(combat.finishedAt),
     ]);
 }
 
@@ -179,10 +184,9 @@ function tdSelect(idPlayer, id, disabled) {
     select.onchange = ((control) => (e) => {
       action = control.value;
       updateSelectTarget(idPlayer, id, action)
-    })(select)//actionSelected(select, id);
+    })(select)
     select.disabled = disabled ? "disabled" : undefined;
     const node = document.createElement("td");
-    //node.appendChild(document.createTextNode(text));
     node.appendChild(select);
     return node;
 }
@@ -190,7 +194,7 @@ function tdSelect(idPlayer, id, disabled) {
 function updateSelectTarget(idPlayer, id, selectedAction) {
    const select = document.getElementById(`targets-${id}`);
    select.innerHTML = '<options><option value=""></option>'
-   let dataForTarget = combatData.filter(c =>
+   let dataForTarget = combatRunningData.combatData.filter(c =>
      c.hp > 0
      && (
        (selectedAction === 'CAUSED_DAMAGE' && c.idPlayer != idPlayer)
@@ -199,7 +203,6 @@ function updateSelectTarget(idPlayer, id, selectedAction) {
    );
    dataForTarget.forEach(cd => select.innerHTML += `<option value="${cd.id}">${cd.name}</option>`);
    select.innerHTML += '</options>'
-   //select.onchange = (e) => targetSelected(select);
 }
 
 function tdSelectTarget(idPlayer, id, data, disabled) {

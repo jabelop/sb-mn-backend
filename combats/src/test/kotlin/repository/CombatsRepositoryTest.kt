@@ -34,7 +34,7 @@ class CombatsRepositoryTest: CombatsRepository {
             port = 6587,
             startedAt = "2025-12-18T01:30:23",
             updatedAt = "2025-12-18T12:15:23",
-            finishedAt = "2025-12-18T12:15:23",
+            finishedAt = 1767724807040,
         )
     )
     var combatsData = listOf<CombatData>(
@@ -136,7 +136,7 @@ class CombatsRepositoryTest: CombatsRepository {
         return filteredCombatsData
     }
 
-    override fun updatePlayerCombat(options: UpdatePlayerCombatOptions): CombatData {
+    override fun updatePlayerCombat(combat: Combat, combatData: List<CombatData>) {
         TODO("Not yet implemented")
     }
 

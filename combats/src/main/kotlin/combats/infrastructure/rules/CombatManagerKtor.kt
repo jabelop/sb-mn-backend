@@ -85,4 +85,8 @@ class CombatManagerKtor(val initCombat: Combat, val initCombatData: List<CombatD
     override fun checkLoser(playerId: String): Boolean {
         return this.combatData.filter { it.idPlayer == playerId }.all { it.hp <= 0 }
     }
+
+    override fun setCombatWinner(playerId: String) {
+        this.combat.winner = playerId
+    }
 }

@@ -493,25 +493,25 @@ fun Application.configureCombatsQueues(configManager: ConfigManager) {
                         var code = ResponseCodeManager.OK
                         try {
                             log.info("updating: ${message.body}")
-                            val data = combatsController.combatsService.updatePlayerCombat(message.body.payload.options)
-                            messageResponse = "Updated the combat : ${message.body.payload.options.combatId}"
+                            combatsController.combatsService.updatePlayerCombat(
+                                combat = message.body.payload.combat,
+                                combatData = message.body.payload.combatData
+                            )
+                            messageResponse = "Updated the combat : ${message.body.payload.combat.id}"
                             log.info(messageResponse)
 
-                            message { RabbitIdMessage(
+                            message {
+                                RabbitIdMessage(
                                 id = message.body.id,
-                                payload = StandardResponse<MessagePlayerCombatUpdate>(
-                                    error = false,
-                                    code = code,
-                                    msg = messageResponse,
-                                    data = MessagePlayerCombatUpdate(
-                                        combat = data
+                                    payload = StandardResponse<MessagePlayerCombatUpdate>(
+                                        error = false,
+                                        code = code,
+                                        msg = messageResponse,
+                                        data = null
                                     )
                                 )
-                            )}
+                            }
                         }
-//                        catch(e: ClientException) {
-//
-//                        }
                         catch (e: Exception) {
                             if (ClientExceptionChecker.isClientException(e)) {
                                 log.info("Client exception: ${e.message}")

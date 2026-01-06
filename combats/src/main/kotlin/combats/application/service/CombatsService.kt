@@ -4,7 +4,6 @@ import com.jatec.combats.application.dtos.MessageCombatCreatedData
 import com.jatec.combats.application.validators.CombatValidatedBuilder
 import com.jatec.combats.application.validators.CreatePlayerCombatDataFromOptionsValidatedBuilder
 import com.jatec.combats.application.validators.OptionsValidatedBuilder
-import com.jatec.combats.application.validators.UpdatePlayerCombatOptionsValidatedBuilder
 import com.jatec.combats.domain.model.Combat
 import com.jatec.combats.domain.model.CombatCreatedData
 import com.jatec.combats.domain.model.CombatData
@@ -12,8 +11,6 @@ import com.jatec.combats.domain.options.CreatePlayerCombatOptions
 import com.jatec.combats.domain.options.WhereOptions
 import com.jatec.combats.domain.repository.CombatsRepository
 import com.jatec.combats.domain.value_objects.ValidUUID
-import combats.domain.options.UpdatePlayerCombatOptions
-import java.util.UUID.fromString
 
 class CombatsService(combatsRepository: CombatsRepository) {
     val repository = combatsRepository
@@ -29,9 +26,10 @@ class CombatsService(combatsRepository: CombatsRepository) {
         return repository.findCombatCreatedData(ValidUUID(id).validatedUuid.toString())
     }
 
-    fun updatePlayerCombat(options: UpdatePlayerCombatOptions): CombatData {
+    fun updatePlayerCombat(combat: Combat, combatData: List<CombatData>) {
         return repository.updatePlayerCombat(
-            UpdatePlayerCombatOptionsValidatedBuilder.Companion.buildValidatedUpdatePlayerCombatOptions(options)
+            combat = combat,
+            combatData = combatData
         )
     }
 

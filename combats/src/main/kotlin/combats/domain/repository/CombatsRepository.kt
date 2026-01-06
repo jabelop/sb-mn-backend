@@ -13,7 +13,7 @@ interface CombatsRepository {
 
     fun findPlayerCombats(options: WhereOptions): List<CombatData>
 
-    fun updatePlayerCombat(options: UpdatePlayerCombatOptions): CombatData
+    fun updatePlayerCombat(combat: Combat, combatData: List<CombatData>)
 
     fun createPlayerCombat(options: CreatePlayerCombatData): CombatCreatedData
 

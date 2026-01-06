@@ -59,9 +59,18 @@ interface CombatManager {
 
     /**
      * check if a player has lost the combat
+     *
      * @param playerId {String} the player id to be checked
      *
      * @return true if the player has lost the combat, false otherwise
      */
     fun checkLoser(playerId: String): Boolean
+
+    /**
+     * set the received player as the winner of the combat
+     *
+     * @param playerId {String} the player id who won the combat
+     *
+     */
+    fun setCombatWinner(playerId: String)
 }

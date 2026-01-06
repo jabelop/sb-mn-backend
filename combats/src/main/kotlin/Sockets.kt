@@ -8,6 +8,8 @@ import com.jatec.combats.infrastructure.rules.CombatManagerKtor
 import com.jatec.combats.domain.model.CombatCreatedData
 import com.jatec.combats.application.rules.CombatRunningActions
 import com.jatec.combats.application.rules.CombatRunningStatus
+import com.jatec.combats.domain.model.Combat
+import com.jatec.combats.domain.options.WhereOptions
 import com.jatec.combats.infrastructure.controller.CombatsController
 import com.jatec.shared.application.communication.ResponseCodeManager
 import com.jatec.shared.application.dto.StandardResponse
@@ -17,6 +19,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 import kotlin.getValue
@@ -52,8 +55,13 @@ fun Application.configureSockets() {
             }
             else {
                 var data: CombatCreatedData?
+                var combat: Combat?
                 try {
                     data = combatsController.combatsService.findCombatCreatedData(combatId)
+                    combat = combatsController.combatsService.find(WhereOptions(
+                        playerId = null,
+                        combatId = combatId
+                    )).first()
                 } catch (e: CombatNotExistingException) {
                     log.info(e.message)
                     send(
@@ -88,6 +96,7 @@ fun Application.configureSockets() {
                                 action = CombatRunningActions.WAIT,
                                 status = CombatRunningStatus.RUNNING,
                                 combatData = data.combatData,
+                                combat = combat,
                                 next = null
                             )
                         )
@@ -101,7 +110,20 @@ fun Application.configureSockets() {
                 // combat loop
                 while(true) {
                     val updatedData = combatManagerKtor.updateLoop(TimeSource.Monotonic.markNow())
+                    launch {
+                        try {
+                            combatsController.combatsService.updatePlayerCombat(
+                                combat = combatManagerKtor.combat,
+                                combatData = updatedData
+                            )
+                        } catch (e: Exception) {
+                            log.info("Error updating player combat")
+                            log.info(e.message)
+                            e.printStackTrace()
+                        }
+                    }
                     if (combatManagerKtor.checkLoser(playerId)){
+                        combatManagerKtor.setCombatWinner(otherPlayerId)
                         send(
                             Json.encodeToString(
                                 StandardResponse<MessageCombatRunning>(
@@ -112,6 +134,7 @@ fun Application.configureSockets() {
                                         action = CombatRunningActions.WAIT,
                                         status = CombatRunningStatus.FINISHED,
                                         combatData = updatedData,
+                                        combat = combatManagerKtor.combat,
                                         next = null
                                     )
                                 )
@@ -120,6 +143,7 @@ fun Application.configureSockets() {
                         break
                     }
                     if (combatManagerKtor.checkLoser(otherPlayerId)){
+                        combatManagerKtor.setCombatWinner(playerId)
                         send(
                             Json.encodeToString(
                                 StandardResponse<MessageCombatRunning>(
@@ -130,12 +154,12 @@ fun Application.configureSockets() {
                                         action = CombatRunningActions.WAIT,
                                         status = CombatRunningStatus.FINISHED,
                                         combatData = updatedData,
+                                        combat = combatManagerKtor.combat,
                                         next = null
                                     )
                                 )
                             )
                         )
-                        break
                     }
                     log.info("No winner now")
                     val nextToPlay = combatManagerKtor.getNextCreatureToPlayOrNull()
@@ -150,6 +174,7 @@ fun Application.configureSockets() {
                                         action = CombatRunningActions.WAIT,
                                         status = CombatRunningStatus.RUNNING,
                                         combatData = updatedData,
+                                        combat = combatManagerKtor.combat,
                                         next = null
                                     )
                                 )
@@ -168,6 +193,7 @@ fun Application.configureSockets() {
                                         action = CombatRunningActions.PLAY,
                                         status = CombatRunningStatus.RUNNING,
                                         combatData = updatedData,
+                                        combat = combatManagerKtor.combat,
                                         next = nextToPlay.id
                                     )
                                 )
@@ -190,6 +216,7 @@ fun Application.configureSockets() {
                                                 action = CombatRunningActions.PLAY,
                                                 status = CombatRunningStatus.RUNNING,
                                                 combatData = afterActionData,
+                                                combat = combatManagerKtor.combat,
                                                 next = nextToPlay.id
                                             )
                                         )
@@ -212,6 +239,7 @@ fun Application.configureSockets() {
                                             action = CombatRunningActions.WAIT,
                                             status = CombatRunningStatus.RUNNING,
                                             combatData = updatedData,
+                                            combat = combatManagerKtor.combat,
                                             next = nextToPlay.id
                                         )
                                     )
@@ -239,11 +267,24 @@ fun Application.configureSockets() {
                                         action = action,
                                         status = CombatRunningStatus.RUNNING,
                                         combatData = dataAfterAiMovement,
+                                        combat = combatManagerKtor.combat,
                                         next = nextToPlay.id
                                     )
                                 )
                             )
                         )
+                    }
+                }
+                launch {
+                    try {
+                        combatsController.combatsService.updatePlayerCombat(
+                            combat = combatManagerKtor.combat,
+                            combatData = combatManagerKtor.combatData
+                        )
+                    } catch (e: Exception) {
+                        log.info("Error updating player combat")
+                        log.info(e.message)
+                        e.printStackTrace()
                     }
                 }
                 playerSocketMap.remove(playerId)

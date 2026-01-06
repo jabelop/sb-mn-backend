@@ -4,6 +4,7 @@ import com.jatec.combats.application.exceptions.CombatExistingException
 import com.jatec.combats.application.exceptions.CombatNotExistingException
 import com.jatec.combats.application.rules.CombatMatcher
 import com.jatec.combats.application.rules.RunningCombatConstantsManger
+import com.jatec.combats.application.utils.DateUtils
 import com.jatec.persistence.tables.CombatsTable
 import com.jatec.persistence.tables.CombatsDataTable
 import com.jatec.combats.domain.model.Combat
@@ -13,7 +14,6 @@ import com.jatec.combats.domain.model.CreatePlayerCombatData
 import com.jatec.combats.domain.options.WhereOptions
 import com.jatec.combats.domain.repository.CombatsRepository
 import com.jatec.shared.infrastructure.connection.ConnectionManagerKtor
-import combats.domain.options.UpdatePlayerCombatOptions
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
@@ -23,8 +23,7 @@ import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import org.jetbrains.exposed.v1.jdbc.update
 import java.util.UUID.fromString
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -87,8 +86,36 @@ class CombatsRepositoryPostgre(): CombatsRepository {
         }
     }
 
-    override fun updatePlayerCombat(options: UpdatePlayerCombatOptions): CombatData {
-        TODO("Not yet implemented")
+    override fun updatePlayerCombat(combat: Combat, combatData: List<CombatData>) {
+        return transaction {
+            val fin = if (combat.winner == null) null else DateUtils.nowUnixTime()
+            val playerWinner = if (combat.winner == null) null else fromString(combat.winner)
+            println("Updated_at_new")
+            println(fin)
+            CombatsTable.update(
+                { CombatsTable.id.eq(fromString(combat.id)) }
+            ) {
+                it[winner] = playerWinner
+                it[finishedAt] = fin
+            }
+            combatData.forEach { cd ->
+                CombatsDataTable.update(
+                    {
+                        CombatsDataTable.id.eq(fromString(cd.id))
+                        .and { CombatsDataTable.idCombat.eq(fromString(cd.idCombat)) }
+                            .and { CombatsDataTable.idPlayer.eq(fromString(cd.idPlayer)) }
+                    }
+                ) {
+                    it[level] = cd.level
+                    it[xp] = cd.xp
+                    it[hp] = cd.hp
+                    it[speed] = cd.speed
+                    it[attack] = cd.attack
+                    it[defense] = cd.defense
+                    it[timeToAttack] = cd.timeToAttack
+                }
+            }
+        }
     }
 
     override fun createPlayerCombat(options: CreatePlayerCombatData): CombatCreatedData {
@@ -144,8 +171,6 @@ class CombatsRepositoryPostgre(): CombatsRepository {
                         this[CombatsDataTable.timeToAttack] = RunningCombatConstantsManger.getMaxTimeToAttack()
 
             }
-            val today = Calendar.getInstance()
-            val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(today.time)
             CombatCreatedData(
                 combat = Combat(
                     id = options.combatData.get(0).idCombat,
@@ -154,8 +179,8 @@ class CombatsRepositoryPostgre(): CombatsRepository {
                     winner = null,
                     ip = ConnectionManagerKtor.currentIp!!,
                     port = ConnectionManagerKtor.currentPort!!,
-                    startedAt = now,
-                    updatedAt = now,
+                    startedAt = DateUtils.nowString(),
+                    updatedAt = DateUtils.nowString(),
                     finishedAt = null
                 ),
                 combatData = combatDataToMatch
