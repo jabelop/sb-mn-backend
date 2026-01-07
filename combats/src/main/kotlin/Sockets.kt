@@ -108,62 +108,11 @@ fun Application.configureSockets() {
                     initCombatData = data.combatData
                 )
                 // combat loop
+                var updatedData = data.combatData
                 while(true) {
-                    val updatedData = combatManagerKtor.updateLoop(TimeSource.Monotonic.markNow())
-                    launch {
-                        try {
-                            combatsController.combatsService.updatePlayerCombat(
-                                combat = combatManagerKtor.combat,
-                                combatData = updatedData
-                            )
-                        } catch (e: Exception) {
-                            log.info("Error updating player combat")
-                            log.info(e.message)
-                            e.printStackTrace()
-                        }
-                    }
-                    if (combatManagerKtor.checkLoser(playerId)){
-                        combatManagerKtor.setCombatWinner(otherPlayerId)
-                        send(
-                            Json.encodeToString(
-                                StandardResponse<MessageCombatRunning>(
-                                    error = false,
-                                    code = ResponseCodeManager.OK,
-                                    msg = "Looser!!!",
-                                    data = MessageCombatRunning(
-                                        action = CombatRunningActions.WAIT,
-                                        status = CombatRunningStatus.FINISHED,
-                                        combatData = updatedData,
-                                        combat = combatManagerKtor.combat,
-                                        next = null
-                                    )
-                                )
-                            )
-                        )
-                        break
-                    }
-                    if (combatManagerKtor.checkLoser(otherPlayerId)){
-                        combatManagerKtor.setCombatWinner(playerId)
-                        send(
-                            Json.encodeToString(
-                                StandardResponse<MessageCombatRunning>(
-                                    error = false,
-                                    code = ResponseCodeManager.OK,
-                                    msg = "Winner!!!",
-                                    data = MessageCombatRunning(
-                                        action = CombatRunningActions.WAIT,
-                                        status = CombatRunningStatus.FINISHED,
-                                        combatData = updatedData,
-                                        combat = combatManagerKtor.combat,
-                                        next = null
-                                    )
-                                )
-                            )
-                        )
-                    }
-                    log.info("No winner now")
                     val nextToPlay = combatManagerKtor.getNextCreatureToPlayOrNull()
                     if (nextToPlay == null) {
+                        log.info("no next to play")
                         send(
                             Json.encodeToString(
                                 StandardResponse<MessageCombatRunning>(
@@ -180,9 +129,9 @@ fun Application.configureSockets() {
                                 )
                             )
                         )
-                        continue
                     }
-                    if (nextToPlay.idPlayer == playerId) {
+                    else if (nextToPlay.idPlayer == playerId) {
+                        log.info("next to play player")
                         send(
                             Json.encodeToString(
                                 StandardResponse<MessageCombatRunning>(
@@ -246,9 +195,14 @@ fun Application.configureSockets() {
                                 )
                             )
                         }
+                        log.info("performed action")
+                        log.info(playerId)
+                        continue
                     }
                     // TODO: check this value to implement player vs player combat
                     else {//(data.isVsAi) {
+                        log.info("next to play ai")
+                        log.info(nextToPlay.idPlayer)
                         val action = combatManagerKtor.getAIAction()
                         log.info("ai action: $action")
                         val dataAfterAiMovement =
@@ -273,7 +227,63 @@ fun Application.configureSockets() {
                                 )
                             )
                         )
+                        continue
                     }
+                    log.info("updating")
+                    updatedData = combatManagerKtor.updateLoop(TimeSource.Monotonic.markNow())
+                    launch {
+                        try {
+                            combatsController.combatsService.updatePlayerCombat(
+                                combat = combatManagerKtor.combat,
+                                combatData = updatedData
+                            )
+                        } catch (e: Exception) {
+                            log.info("Error updating player combat")
+                            log.info(e.message)
+                            e.printStackTrace()
+                        }
+                    }
+                    if (combatManagerKtor.checkLoser(playerId)){
+                        combatManagerKtor.setCombatWinner(otherPlayerId)
+                        send(
+                            Json.encodeToString(
+                                StandardResponse<MessageCombatRunning>(
+                                    error = false,
+                                    code = ResponseCodeManager.OK,
+                                    msg = "Looser!!!",
+                                    data = MessageCombatRunning(
+                                        action = CombatRunningActions.WAIT,
+                                        status = CombatRunningStatus.FINISHED,
+                                        combatData = updatedData,
+                                        combat = combatManagerKtor.combat,
+                                        next = null
+                                    )
+                                )
+                            )
+                        )
+                        break
+                    }
+                    if (combatManagerKtor.checkLoser(otherPlayerId)){
+                        combatManagerKtor.setCombatWinner(playerId)
+                        send(
+                            Json.encodeToString(
+                                StandardResponse<MessageCombatRunning>(
+                                    error = false,
+                                    code = ResponseCodeManager.OK,
+                                    msg = "Winner!!!",
+                                    data = MessageCombatRunning(
+                                        action = CombatRunningActions.WAIT,
+                                        status = CombatRunningStatus.FINISHED,
+                                        combatData = updatedData,
+                                        combat = combatManagerKtor.combat,
+                                        next = null
+                                    )
+                                )
+                            )
+                        )
+                        break
+                    }
+                    log.info("No winner now")
                 }
                 launch {
                     try {

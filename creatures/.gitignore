@@ -1,7 +1,15 @@
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
+!**/src/main/**/build/classes
+!**/src/main/**/build/distributions
+!**/src/main/**/build/kotlin
+!**/src/main/**/build/reports
+!**/src/main/**/build/resources
+!**/src/main/**/build/scripts
+!**/src/main/**/build/scriptsShadow
+!**/src/main/**/build/test-results
+!**/src/main/**/build/tmp
 !**/src/test/**/build/
 
 ### STS ###
